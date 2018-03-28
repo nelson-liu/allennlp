@@ -67,7 +67,7 @@ class DataIterator(Registrable):
                     yield from generator
                 else:
                     with PrefetchGenerator(generator, max_lookahead=prefetch) as prefetch_generator:
-                    yield from prefetch_generator
+                        yield from prefetch_generator
         else:
             for _ in range(num_epochs):
                 generator = self._yield_one_epoch(instances, shuffle, cuda_device, for_training)
@@ -75,7 +75,7 @@ class DataIterator(Registrable):
                     yield from generator
                 else:
                     with PrefetchGenerator(generator, max_lookahead=prefetch) as prefetch_generator:
-                    yield from prefetch_generator
+                        yield from prefetch_generator
 
     def get_num_batches(self, instances: Iterable[Instance]) -> int:
         """
