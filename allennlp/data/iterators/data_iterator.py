@@ -26,7 +26,6 @@ class DataIterator(Registrable):
                  num_epochs: int = None,
                  shuffle: bool = True,
                  cuda_device: int = -1,
-                 prefetch: int = 0,
                  for_training: bool = True) -> Generator[Dict[str, Union[numpy.ndarray,
                                                                          Dict[str, numpy.ndarray]]],
                                                          None, None]:
@@ -49,21 +48,15 @@ class DataIterator(Registrable):
         cuda_device : ``int``
             If cuda_device >= 0, GPUs are available and Pytorch was compiled with CUDA support, the
             tensor will be copied to the cuda_device specified.
-        prefetch : ``int``, optional (default=0)
-            The number of batches to prefetch in the iterator. If 0, no pre-fetching is done.
-            If -1, everything will be prefetched, which may lead to OOM errors if batches
-            are not processed quickly enough.
         for_training : ``bool``, optional (default=``True``)
             If ``False``, we will pass the ``volatile=True`` flag when constructing variables,
             which disables gradient computations in the graph.  This makes inference more efficient
             (particularly in memory usage), but is incompatible with training models.
         """
-        if prefetch < -1:
-            raise ConfigurationError("Prefetch value is {}, but must be at least -1.".format(prefetch))
         if num_epochs is None:
             while True:
                 generator = self._yield_one_epoch(instances, shuffle, cuda_device, for_training)
-                if prefetch == 0:
+                if self._prefetch == 0:
                     yield from generator
                 else:
                     with PrefetchGenerator(generator, max_lookahead=prefetch) as prefetch_generator:
@@ -71,7 +64,7 @@ class DataIterator(Registrable):
         else:
             for _ in range(num_epochs):
                 generator = self._yield_one_epoch(instances, shuffle, cuda_device, for_training)
-                if prefetch == 0:
+                if self._prefetch == 0:
                     yield from generator
                 else:
                     with PrefetchGenerator(generator, max_lookahead=prefetch) as prefetch_generator:

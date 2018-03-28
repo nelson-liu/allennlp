@@ -31,14 +31,23 @@ class BasicIterator(DataIterator):
         If specified, the iterator will load this many instances at a time into an
         in-memory list and then produce batches from one such list at a time. This
         could be useful if your instances are read lazily from disk.
+    prefetch : ``int``, optional (default=0)
+        The number of batches to prefetch in the iterator. If 0, no pre-fetching is done.
+        If -1, everything will be prefetched, which may lead to OOM errors if batches
+        are not processed quickly enough.
+
     """
     def __init__(self,
                  batch_size: int = 32,
                  instances_per_epoch: int = None,
-                 max_instances_in_memory: int = None) -> None:
+                 max_instances_in_memory: int = None,
+                 prefetch: int = 0) -> None:
         self._batch_size = batch_size
         self._instances_per_epoch = instances_per_epoch
         self._max_instances_in_memory = max_instances_in_memory
+        if self._prefetch < -1:
+            raise ConfigurationError("Prefetch value is {}, but must be at least -1.".format(prefetch))
+        self._prefetch = prefetch
 
         self._cursors: Dict[int, Iterator[Instance]] = {}
 
