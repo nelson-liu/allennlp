@@ -35,7 +35,6 @@ class BasicIterator(DataIterator):
         The number of batches to prefetch in the iterator. If 0, no pre-fetching is done.
         If -1, everything will be prefetched, which may lead to OOM errors if batches
         are not processed quickly enough.
-
     """
     def __init__(self,
                  batch_size: int = 32,
