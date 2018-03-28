@@ -44,10 +44,9 @@ class BasicIterator(DataIterator):
         self._batch_size = batch_size
         self._instances_per_epoch = instances_per_epoch
         self._max_instances_in_memory = max_instances_in_memory
-        if self._prefetch < -1:
+        if prefetch < -1:
             raise ConfigurationError("Prefetch value is {}, but must be at least -1.".format(prefetch))
         self._prefetch = prefetch
-
         self._cursors: Dict[int, Iterator[Instance]] = {}
 
     @overrides
