@@ -59,7 +59,7 @@ class DataIterator(Registrable):
                 if self._prefetch == 0:
                     yield from generator
                 else:
-                    with PrefetchGenerator(generator, max_lookahead=prefetch) as prefetch_generator:
+                    with PrefetchGenerator(generator, max_lookahead=self._prefetch) as prefetch_generator:
                         yield from prefetch_generator
         else:
             for _ in range(num_epochs):
@@ -67,7 +67,7 @@ class DataIterator(Registrable):
                 if self._prefetch == 0:
                     yield from generator
                 else:
-                    with PrefetchGenerator(generator, max_lookahead=prefetch) as prefetch_generator:
+                    with PrefetchGenerator(generator, max_lookahead=self._prefetch) as prefetch_generator:
                         yield from prefetch_generator
 
     def get_num_batches(self, instances: Iterable[Instance]) -> int:
