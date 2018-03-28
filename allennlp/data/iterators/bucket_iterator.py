@@ -135,10 +135,12 @@ class BucketIterator(BasicIterator):
         batch_size = params.pop_int('batch_size', 32)
         instances_per_epoch = params.pop_int('instances_per_epoch', None)
         max_instances_in_memory = params.pop_int('max_instances_in_memory', None)
+        prefetch = params.pop_int('prefetch', 0)
         params.assert_empty(cls.__name__)
         return cls(sorting_keys=sorting_keys,
                    padding_noise=padding_noise,
                    biggest_batch_first=biggest_batch_first,
                    batch_size=batch_size,
                    instances_per_epoch=instances_per_epoch,
-                   max_instances_in_memory=max_instances_in_memory)
+                   max_instances_in_memory=max_instances_in_memory,
+                   prefetch=prefetch)
