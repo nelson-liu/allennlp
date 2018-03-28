@@ -1,4 +1,5 @@
-from multiprocessing import Process, Queue
+import torch.multiprocessing as multiprocessing
+multiprocessing.set_start_method('spawn')
 from queue import Empty
 
 class ExceptionItem(object):
@@ -25,9 +26,9 @@ class PrefetchGenerator(object):
         be forwarded to this prefetch generator.
         """
         if max_lookahead:
-            self.queue = Queue(max_lookahead)
+            self.queue = multiprocessing.Queue(max_lookahead)
         else:
-            self.queue = Queue()
+            self.queue = multiprocessing.Queue()
 
         def wrapped():
             try:
@@ -39,7 +40,7 @@ class PrefetchGenerator(object):
 
         self.get_timeout = get_timeout
 
-        self.process = Process(target=wrapped)
+        self.process = multiprocessing.Process(target=wrapped)
         self.process_started = False
 
     def __enter__(self):
