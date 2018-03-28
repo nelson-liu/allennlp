@@ -1,5 +1,5 @@
 import torch.multiprocessing as multiprocessing
-multiprocessing.set_start_method('spawn')
+multiprocessing = multiprocessing.get_context('spawn')
 from queue import Empty
 
 class ExceptionItem(object):
