@@ -53,10 +53,20 @@ class DataIterator(Registrable):
         """
         if num_epochs is None:
             while True:
-                yield from self._yield_one_epoch(instances, shuffle, cuda_device, for_training)
+                for batch in self._yield_one_epoch(instances, shuffle, for_training):
+                    # Move the batch to cuda
+                    for field in batch:
+                        if cuda_device > -1:
+                            batch[field] = batch[field].cuda(cuda_device)
+                    yield batch
         else:
             for _ in range(num_epochs):
-                yield from self._yield_one_epoch(instances, shuffle, cuda_device, for_training)
+                for batch in self._yield_one_epoch(instances, shuffle, for_training):
+                    # Move the batch to cuda
+                    for field in batch:
+                        if cuda_device > -1:
+                            batch[field] = batch[field].cuda(cuda_device)
+                    yield batch
 
     def get_num_batches(self, instances: Iterable[Instance]) -> int:
         """
@@ -66,7 +76,7 @@ class DataIterator(Registrable):
         """
         raise NotImplementedError
 
-    def _yield_one_epoch(self, instances: Iterable[Instance], shuffle: bool, cuda_device: int, for_training: bool):
+    def _yield_one_epoch(self, instances: Iterable[Instance], shuffle: bool, for_training: bool):
         batches = self._create_batches(instances, shuffle)
         for batch in batches:
             if self.vocab is not None:
@@ -75,7 +85,6 @@ class DataIterator(Registrable):
             logger.debug("Batch padding lengths: %s", str(padding_lengths))
             logger.debug("Batch size: %d", len(batch.instances))
             yield batch.as_tensor_dict(padding_lengths,
-                                       cuda_device=cuda_device,
                                        for_training=for_training)
 
     def _create_batches(self, instances: Iterable[Instance], shuffle: bool) -> Iterable[Batch]:
