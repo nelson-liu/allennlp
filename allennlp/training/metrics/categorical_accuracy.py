@@ -1,3 +1,4 @@
+from collections import Counter
 from typing import Optional
 
 from overrides import overrides
@@ -15,6 +16,8 @@ class CategoricalAccuracy(Metric):
     """
     def __init__(self, top_k: int = 1) -> None:
         self._top_k = top_k
+        self.label_num_correct = Counter()
+        self.label_num_total = Counter()
         self.correct_count = 0.
         self.total_count = 0.
 
@@ -52,6 +55,14 @@ class CategoricalAccuracy(Metric):
             top_k = predictions.topk(min(self._top_k, predictions.shape[-1]), -1)[1]
 
         # This is of shape (batch_size, ..., top_k).
+        squeezed_top_k = top_k.squeeze(-1)
+        if squeezed_top_k.dim() < 3:
+            assert squeezed_top_k.size() == gold_labels.size()
+            for example, gold in zip(squeezed_top_k, gold_labels.long()):
+                for prediction, label in zip(example, gold):
+                    self.label_num_total[label.item()] += 1
+                    if prediction == label:
+                        self.label_num_correct[label.item()] += 1
         correct = top_k.eq(gold_labels.long().unsqueeze(-1)).float()
 
         if mask is not None:

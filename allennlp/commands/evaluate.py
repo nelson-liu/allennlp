@@ -135,6 +135,7 @@ def evaluate_from_args(args: argparse.Namespace) -> Dict[str, Any]:
 
     logger.info("Finished evaluating.")
     logger.info("Metrics:")
+    import pdb; pdb.set_trace()
     for key, metric in metrics.items():
         logger.info("%s: %s", key, metric)
 
