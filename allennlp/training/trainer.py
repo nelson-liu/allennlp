@@ -970,11 +970,34 @@ class Trainer:
         grad_norm = params.pop_float("grad_norm", None)
         grad_clipping = params.pop_float("grad_clipping", None)
         lr_scheduler_params = params.pop("learning_rate_scheduler", None)
+        fine_tuning = params.pop("fine-tuning", None)
+        optimizer_params = params.pop("optimizer")
+        if fine_tuning == "discriminative" or \
+                (lr_scheduler_params is not None and "freeze" in lr_scheduler_params):
+            if "parameter_groups" in optimizer_params:
+                modules = [group[0] for group in optimizer_params["parameter_groups"]]
+            else:
+                # split up parameters in groups based on modules
+                modules = [[m] for m in model._modules]
+            if fine_tuning == "discriminative":
+                # use a different learning rate for every parameter group
+                assert "lr" in optimizer_params, \
+                    "Error: A base learning rate is required for " \
+                    "discriminative fine-tuning."
+                lr = optimizer_params["lr"]
+                decay_factor = 0.38
+                # use the caret to match module only at the start
+                groups = [[[f"^{m}" for m in module], {"lr": lr*decay_factor**i}] for i, module in enumerate(reversed(modules))]
+            else:
+                # use the default learning rate across all layers
+                groups = [[[f"^{m}" for m in module], {}] for module in reversed(modules)]
+            groups = [g for g in reversed(groups)]  # set original order again
+            optimizer_params["parameter_groups"] = groups
 
         if cuda_device >= 0:
             model = model.cuda(cuda_device)
         parameters = [[n, p] for n, p in model.named_parameters() if p.requires_grad]
-        optimizer = Optimizer.from_params(parameters, params.pop("optimizer"))
+        optimizer = Optimizer.from_params(parameters, optimizer_params)
 
         if lr_scheduler_params:
             scheduler = LearningRateScheduler.from_params(optimizer, lr_scheduler_params)
