@@ -516,6 +516,7 @@ class Trainer:
             # Log parameter values to Tensorboard
             if batch_num_total % self._summary_interval == 0:
                 self._parameter_and_gradient_statistics_to_tensorboard(batch_num_total, batch_grad_norm)
+                self._learning_rates_to_tensorboard(batch_num_total)
                 self._tensorboard.add_train_scalar("loss/loss_train", metrics["loss"], batch_num_total)
                 self._metrics_to_tensorboard(batch_num_total,
                                              {"epoch_metrics/" + k: v for k, v in metrics.items()})
@@ -586,6 +587,23 @@ class Trainer:
             self._tensorboard.add_train_scalar("gradient_norm",
                                                batch_grad_norm,
                                                epoch)
+
+    def _learning_rates_to_tensorboard(self, batch_num_total: int):
+        """
+        Send current parameter specific learning rates to tensorboard
+        """
+        # optimizer stores lr info keyed by parameter tensor
+        # we want to log with parameter name
+        names = {param: name for name, param in self._model.named_parameters()}
+        for group in self._optimizer.param_groups:
+            if 'lr' not in group:
+                continue
+            lr = group['lr']
+            for param in group['params']:
+                names[param]
+                self._tensorboard.add_train_scalar(
+                        "learning_rate/" + name[param], lr, batch_num_total
+                )
 
     def _histograms_to_tensorboard(self, epoch: int, histogram_parameters: Set[str]) -> None:
         """
