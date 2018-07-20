@@ -600,9 +600,8 @@ class Trainer:
                 continue
             lr = group['lr']
             for param in group['params']:
-                names[param]
                 self._tensorboard.add_train_scalar(
-                        "learning_rate/" + name[param], lr, batch_num_total
+                        "learning_rate/" + names[param], lr, batch_num_total
                 )
 
     def _histograms_to_tensorboard(self, epoch: int, histogram_parameters: Set[str]) -> None:
