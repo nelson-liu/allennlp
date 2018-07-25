@@ -282,7 +282,7 @@ def train_model(params: Params,
     model = Model.from_params(vocab=vocab, params=params.pop('model'))
     logger.info("All model parameters, with mean and std of values")
     for name, param in model.named_parameters():
-        logger.info('{}: {}, {}', name, param.mean().item(), param.std().item())
+        logger.info('{0}: {1}, {2}'.format(name, param.mean().item(), param.std().item()))
     iterator = DataIterator.from_params(params.pop("iterator"))
     iterator.index_with(vocab)
     validation_iterator_params = params.pop("validation_iterator", None)
