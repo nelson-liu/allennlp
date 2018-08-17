@@ -166,6 +166,7 @@ class Trainer:
                  patience: Optional[int] = None,
                  validation_metric: str = "-loss",
                  validation_iterator: DataIterator = None,
+                 shuffle: bool = True,
                  num_epochs: int = 20,
                  serialization_dir: Optional[str] = None,
                  num_serialized_models_to_keep: int = 20,
@@ -207,6 +208,8 @@ class Trainer:
         validation_iterator : ``DataIterator``, optional (default=None)
             An iterator to use for the validation set.  If ``None``, then
             use the training `iterator`.
+        shuffle: ``bool``, optional (default=True)
+            Whether to shuffle the instances in the iterator or not.
         num_epochs : int, optional (default = 20)
             Number of training epochs.
         serialization_dir : str, optional (default=None)
@@ -265,6 +268,7 @@ class Trainer:
         self._model = model
         self._iterator = iterator
         self._validation_iterator = validation_iterator
+        self._shuffle = shuffle
         self._optimizer = optimizer
         self._train_data = train_dataset
         self._validation_data = validation_dataset
@@ -462,6 +466,7 @@ class Trainer:
         # Get tqdm for the training batches
         train_generator = self._iterator(self._train_data,
                                          num_epochs=1,
+                                         shuffle=self._shuffle,
                                          cuda_device=self._iterator_device)
         num_training_batches = self._iterator.get_num_batches(self._train_data)
         self._last_log = time.time()
@@ -694,6 +699,7 @@ class Trainer:
 
         val_generator = val_iterator(self._validation_data,
                                      num_epochs=1,
+                                     shuffle=False,
                                      cuda_device=self._iterator_device)
         num_validation_batches = val_iterator.get_num_batches(self._validation_data)
         val_generator_tqdm = Tqdm.tqdm(val_generator,
@@ -738,6 +744,7 @@ class Trainer:
 
         train_metrics: Dict[str, float] = {}
         val_metrics: Dict[str, float] = {}
+        best_epoch_val_metrics: Dict[str, float] = {}
         epochs_trained = 0
         training_start_time = time.time()
         for epoch in range(epoch_counter, self._num_epochs):
@@ -755,7 +762,8 @@ class Trainer:
 
                     # Check validation metric to see if it's the best so far
                     is_best_so_far = self._is_best_so_far(this_epoch_val_metric, validation_metric_per_epoch)
-
+                    if is_best_so_far:
+                        best_epoch_val_metrics = val_metrics.copy()
                     validation_metric_per_epoch.append(this_epoch_val_metric)
                     if self._should_stop_early(validation_metric_per_epoch):
                         logger.info("Ran out of patience.  Stopping training.")
@@ -765,6 +773,7 @@ class Trainer:
                 # No validation set, so just assume it's the best so far.
                 is_best_so_far = True
                 val_metrics = {}
+                best_epoch_val_metrics = {}
                 this_epoch_val_metric = None
 
             self._save_checkpoint(epoch, validation_metric_per_epoch, is_best=is_best_so_far)
@@ -805,7 +814,7 @@ class Trainer:
                 best_validation_metric = min(validation_metric_per_epoch)
             else:
                 best_validation_metric = max(validation_metric_per_epoch)
-            metrics[f"best_validation_{self._validation_metric}"] = best_validation_metric
+            metrics.update({f"best_validation_{k}": v for k, v in best_epoch_val_metrics.items()})
             metrics['best_epoch'] = [i for i, value in enumerate(validation_metric_per_epoch)
                                      if value == best_validation_metric][-1]
         return metrics
@@ -997,6 +1006,7 @@ class Trainer:
 
         patience = params.pop_int("patience", None)
         validation_metric = params.pop("validation_metric", "-loss")
+        shuffle = params.pop_bool("shuffle", True)
         num_epochs = params.pop_int("num_epochs", 20)
         cuda_device = params.pop_int("cuda_device", -1)
         grad_norm = params.pop_float("grad_norm", None)
@@ -1049,6 +1059,7 @@ class Trainer:
                        patience=patience,
                        validation_metric=validation_metric,
                        validation_iterator=validation_iterator,
+                       shuffle=shuffle,
                        num_epochs=num_epochs,
                        serialization_dir=serialization_dir,
                        cuda_device=cuda_device,
