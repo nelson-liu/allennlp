@@ -1012,7 +1012,7 @@ class Trainer:
         grad_norm = params.pop_float("grad_norm", None)
         grad_clipping = params.pop_float("grad_clipping", None)
         lr_scheduler_params = params.pop("learning_rate_scheduler", None)
-        fine_tuning = params.pop("fine-tuning", None)
+        fine_tuning = params.pop("fine_tuning", None)
         optimizer_params = params.pop("optimizer")
         if fine_tuning == "discriminative" or \
                 (lr_scheduler_params is not None and "freeze" in lr_scheduler_params):
