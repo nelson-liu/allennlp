@@ -160,7 +160,7 @@ __global__ void elementWise_fp(int hiddenSize, int miniBatch, int numCovered,
 }
 
 void highway_lstm_backward_ongpu(int inputSize, int hiddenSize, int miniBatch,
-        int numLayers, int seqLength, float *out_grad, long *lengths,
+        int numLayers, long seqLength, float *out_grad, long *lengths,
         float *h_data_grad, float * c_data_grad, float *x, float *h_data,
         float *c_data, float *T,
         float *gates_out, float *dropout_in, float *h_gates_grad,
@@ -194,9 +194,9 @@ void highway_lstm_backward_ongpu(int inputSize, int hiddenSize, int miniBatch,
     cudaErrCheck(cudaMemcpy(ones, ones_host, miniBatch * sizeof(float), cudaMemcpyHostToDevice));
 
     for (int layer = numLayers-1; layer >= 0; layer--) {
-        int direction;
-        int startInd;
-        int currNumCovered;
+        long direction;
+        long startInd;
+        long currNumCovered;
         if (layer % 2 == 0) {
             // forward direction
             direction = -1;
@@ -209,10 +209,10 @@ void highway_lstm_backward_ongpu(int inputSize, int hiddenSize, int miniBatch,
             currNumCovered = miniBatch;
         }
 
-        for (int t = startInd; t < seqLength && t >= 0; t = t + direction) {
+        for (long t = startInd; t < seqLength && t >= 0; t = t + direction) {
             
-            int prevIndex;
-            int prevGradIndex;
+            long prevIndex;
+            long prevGradIndex;
             if (direction == 1) {
                 while (lengths[currNumCovered-1] <= t) {
                     currNumCovered--;
@@ -241,7 +241,7 @@ void highway_lstm_backward_ongpu(int inputSize, int hiddenSize, int miniBatch,
             dim3 gridDim;
 
             blockDim.x = BLOCK;
-            gridDim.x = ((currNumCovered * hiddenSize) + blockDim.x - 1) / blockDim.x;               
+            gridDim.x = ((currNumCovered * hiddenSize) + blockDim.x - 1) / blockDim.x;
 
             elementWise_bp <<< gridDim, blockDim , 0, stream>>> 
                 (hiddenSize, miniBatch, currNumCovered,
@@ -375,7 +375,7 @@ void highway_lstm_backward_ongpu(int inputSize, int hiddenSize, int miniBatch,
 }
 
 void highway_lstm_forward_ongpu(int inputSize, int hiddenSize, int miniBatch, 
-        int numLayers, int seqLength, float *x, long *lengths, float *h_data, 
+        int numLayers, long seqLength, float *x, long *lengths, float *h_data, 
         float *c_data, float *tmp_i, float *tmp_h, float *T, float *bias,
         float *dropout, float *gates, int is_training, cudaStream_t stream, cublasHandle_t handle) {
 
@@ -391,9 +391,9 @@ void highway_lstm_forward_ongpu(int inputSize, int hiddenSize, int miniBatch,
     cudaErrCheck(cudaStreamCreate(&stream_h));
 
     for (int layer = 0; layer < numLayers; layer++) {
-        int direction;
-        int startInd;
-        int currNumCovered;
+        long direction;
+        long startInd;
+        long currNumCovered;
         if (layer % 2 == 0) {
             // forward direction
             direction = 1;
@@ -407,9 +407,9 @@ void highway_lstm_forward_ongpu(int inputSize, int hiddenSize, int miniBatch,
         }
         cublasErrCheck(cublasSetStream(handle, stream));
 
-        for (int t = startInd; t < seqLength && t >= 0; t = t + direction) {
+        for (long t = startInd; t < seqLength && t >= 0; t = t + direction) {
             
-            int prevIndex;
+            long prevIndex;
             if (direction == 1) {
                 while (lengths[currNumCovered-1] <= t) {
                     currNumCovered--;

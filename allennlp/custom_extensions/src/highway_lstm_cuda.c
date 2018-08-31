@@ -4,7 +4,7 @@
 extern THCState *state;
 
 int highway_lstm_forward_cuda(int inputSize, int hiddenSize, int miniBatch,
-        int numLayers, int seqLength,
+        int numLayers, long seqLength,
         THCudaTensor *x,
         THLongTensor *lengths,
         THCudaTensor *h_data,
@@ -36,7 +36,7 @@ int highway_lstm_forward_cuda(int inputSize, int hiddenSize, int miniBatch,
     cudaStream_t stream = THCState_getCurrentStream(state);
     cublasHandle_t handle = THCState_getCurrentBlasHandle(state);
 
-    highway_lstm_forward_ongpu(inputSize, hiddenSize, miniBatch, numLayers, 
+    highway_lstm_forward_ongpu(inputSize, hiddenSize, miniBatch, numLayers,
             seqLength, x_ptr, lengths_ptr, h_data_ptr, c_data_ptr, tmp_i_ptr,
             tmp_h_ptr, T_ptr, bias_ptr, dropout_ptr, gates_ptr,
             isTraining, stream, handle);
@@ -45,7 +45,7 @@ int highway_lstm_forward_cuda(int inputSize, int hiddenSize, int miniBatch,
 
 }
 
-int highway_lstm_backward_cuda(int inputSize, int hiddenSize, int miniBatch, int numLayers, int seqLength,
+int highway_lstm_backward_cuda(int inputSize, int hiddenSize, int miniBatch, int numLayers, long seqLength,
         THCudaTensor *out_grad,
         THLongTensor *lengths,
         THCudaTensor *h_data_grad,

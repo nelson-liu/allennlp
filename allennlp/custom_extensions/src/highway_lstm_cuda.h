@@ -1,11 +1,11 @@
-int highway_lstm_forward_cuda(int inputSize, int hiddenSize, int miniBatch, int numLayers, int seqLength,
+int highway_lstm_forward_cuda(int inputSize, int hiddenSize, int miniBatch, int numLayers, long seqLength,
     THCudaTensor *x, THLongTensor *lengths, THCudaTensor *h_data,
     THCudaTensor *c_data, THCudaTensor *tmp_i,
     THCudaTensor *tmp_h, THCudaTensor *T, THCudaTensor *bias,
     THCudaTensor *dropout, THCudaTensor *gates, int isTraining);
 
 int highway_lstm_backward_cuda(int inputSize, int hiddenSize, int miniBatch,
-        int numLayers, int seqLength, THCudaTensor *out_grad, THLongTensor *lengths,
+        int numLayers, long seqLength, THCudaTensor *out_grad, THLongTensor *lengths,
         THCudaTensor *h_data_grad, THCudaTensor *c_data_grad, THCudaTensor *x,
         THCudaTensor *h_data, THCudaTensor *c_data, THCudaTensor *T,
         THCudaTensor *gates_out, THCudaTensor *dropout_in,
