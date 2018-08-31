@@ -6,7 +6,7 @@ extern THCState *state;
 int highway_lstm_forward_cuda(int inputSize, int hiddenSize, int miniBatch,
         int numLayers, int seqLength,
         THCudaTensor *x,
-        THIntTensor *lengths,
+        THLongTensor *lengths,
         THCudaTensor *h_data,
         THCudaTensor *c_data,
         THCudaTensor *tmp_i,
@@ -18,7 +18,7 @@ int highway_lstm_forward_cuda(int inputSize, int hiddenSize, int miniBatch,
         int isTraining) {
 
     float * x_ptr = THCudaTensor_data(state, x);
-    int * lengths_ptr = THIntTensor_data(lengths);
+    long * lengths_ptr = THLongTensor_data(lengths);
     float * h_data_ptr = THCudaTensor_data(state, h_data);
     float * c_data_ptr = THCudaTensor_data(state, c_data);
     float * tmp_i_ptr = THCudaTensor_data(state, tmp_i);
@@ -47,7 +47,7 @@ int highway_lstm_forward_cuda(int inputSize, int hiddenSize, int miniBatch,
 
 int highway_lstm_backward_cuda(int inputSize, int hiddenSize, int miniBatch, int numLayers, int seqLength,
         THCudaTensor *out_grad,
-        THIntTensor *lengths,
+        THLongTensor *lengths,
         THCudaTensor *h_data_grad,
         THCudaTensor *c_data_grad,
         THCudaTensor *x,
@@ -66,7 +66,7 @@ int highway_lstm_backward_cuda(int inputSize, int hiddenSize, int miniBatch, int
         int do_weight_grad) {
 
     float * out_grad_ptr = THCudaTensor_data(state, out_grad);
-    int * lengths_ptr = THIntTensor_data(lengths);
+    long * lengths_ptr = THLongTensor_data(lengths);
     float * h_data_grad_ptr = THCudaTensor_data(state, h_data_grad);
     float * c_data_grad_ptr = THCudaTensor_data(state, c_data_grad);
     float * x_ptr = THCudaTensor_data(state, x);

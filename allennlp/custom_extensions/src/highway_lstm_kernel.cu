@@ -160,7 +160,7 @@ __global__ void elementWise_fp(int hiddenSize, int miniBatch, int numCovered,
 }
 
 void highway_lstm_backward_ongpu(int inputSize, int hiddenSize, int miniBatch,
-        int numLayers, int seqLength, float *out_grad, int *lengths,
+        int numLayers, int seqLength, float *out_grad, long *lengths,
         float *h_data_grad, float * c_data_grad, float *x, float *h_data,
         float *c_data, float *T,
         float *gates_out, float *dropout_in, float *h_gates_grad,
@@ -375,7 +375,7 @@ void highway_lstm_backward_ongpu(int inputSize, int hiddenSize, int miniBatch,
 }
 
 void highway_lstm_forward_ongpu(int inputSize, int hiddenSize, int miniBatch, 
-        int numLayers, int seqLength, float *x, int *lengths, float *h_data, 
+        int numLayers, int seqLength, float *x, long *lengths, float *h_data, 
         float *c_data, float *tmp_i, float *tmp_h, float *T, float *bias,
         float *dropout, float *gates, int is_training, cudaStream_t stream, cublasHandle_t handle) {
 
