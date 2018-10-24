@@ -7,9 +7,9 @@
             }
         }
     },
-    "train_data_path": "/train/",
-    "validation_data_path": "/development/",
-    "test_data_path": "/conll-2012-test/",
+    "train_data_path": "/data/train/",
+    "validation_data_path": "data/development/",
+    "test_data_path": "/data/conll-2012-test/",
     "model": {
         "type": "srl",
         "text_field_embedder": {

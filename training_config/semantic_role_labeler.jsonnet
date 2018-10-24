@@ -2,9 +2,9 @@
 //   He, Luheng et al. “Deep Semantic Role Labeling: What Works and What's Next.” ACL (2017).
 {
   "dataset_reader":{"type":"srl"},
-  "train_data_path": "/train/",
-  "validation_data_path": "/development/",
-  "test_data_path": "/conll-2012-test/",
+  "train_data_path": "/data/train/",
+  "validation_data_path": "data/development/",
+  "test_data_path": "/data/conll-2012-test/",
   "model": {
     "type": "srl",
     "text_field_embedder": {
