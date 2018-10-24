@@ -7,8 +7,9 @@
             }
         }
     },
-    "train_data_path": std.extVar('SRL_TRAIN_DATA_PATH'),
-    "validation_data_path": std.extVar('SRL_VALIDATION_DATA_PATH'),
+    "train_data_path": "/train/",
+    "validation_data_path": "/development/",
+    "test_data_path": "/conll-2012-test/",
     "model": {
         "type": "srl",
         "text_field_embedder": {
