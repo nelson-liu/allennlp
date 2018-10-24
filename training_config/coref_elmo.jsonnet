@@ -1,5 +1,8 @@
-// Configuration for a coreference resolution model based on:
+// Configuration for an Elmo-augmented coreference resolution model based on:
 //   Lee, Kenton et al. “End-to-end Neural Coreference Resolution.” EMNLP (2017).
+// Note that this configuration does not reproduce the result in the ELMo paper, see
+//   https://github.com/allenai/allennlp/blob/master/tutorials/how_to/elmo.md#reproducing-the-results-from-deep-contextualized-word-representations
+// for more details.
 {
   "dataset_reader": {
     "type": "coref",
@@ -8,9 +11,11 @@
         "type": "single_id",
         "lowercase_tokens": false
       },
+      "elmo": {
+        "type": "elmo_characters"
+      },
       "token_characters": {
-        "type": "characters",
-        "min_padding_length": 5
+        "type": "characters"
       }
     },
     "max_span_width": 10
@@ -27,6 +32,13 @@
             "pretrained_file": "https://s3-us-west-2.amazonaws.com/allennlp/datasets/glove/glove.6B.300d.txt.gz",
             "embedding_dim": 300,
             "trainable": false
+        },
+        "elmo": {
+            "type": "elmo_token_embedder",
+            "options_file": "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json",
+            "weight_file": "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5",
+            "do_layer_norm": false,
+            "dropout": 0.0
         },
         "token_characters": {
             "type": "character_encoding",
