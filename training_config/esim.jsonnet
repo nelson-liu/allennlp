@@ -11,6 +11,7 @@
     "train_data_path": "https://s3-us-west-2.amazonaws.com/allennlp/datasets/snli/snli_1.0_train.jsonl",
     "validation_data_path": "https://s3-us-west-2.amazonaws.com/allennlp/datasets/snli/snli_1.0_dev.jsonl",
     "test_data_path": "https://s3-us-west-2.amazonaws.com/allennlp/datasets/snli/snli_1.0_test.jsonl",
+    "evaluate_on_test": true,
     "model": {
         "type": "esim",
         "dropout": 0.5,
