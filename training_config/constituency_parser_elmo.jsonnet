@@ -10,9 +10,9 @@
           }
         }
     },
-    "train_data_path": std.extVar('PTB_TRAIN_PATH'),
-    "validation_data_path": std.extVar('PTB_DEV_PATH'),
-    "test_data_path": std.extVar('PTB_TEST_PATH'),
+    "train_data_path": "/data/wsj.train.notrace.trees",
+    "validation_data_path": "/data/wsj.dev.notrace.trees",
+    "test_data_path": "/data/wsj.test.notrace.trees",
     "model": {
       "type": "constituency_parser",
       "text_field_embedder": {
