@@ -90,7 +90,8 @@
     "feature_size": 20,
     "max_span_width": 10,
     "spans_per_word": 0.4,
-    "max_antecedents": 100
+    // "max_antecedents": 100
+    "max_antecedents": 75
   },
   "iterator": {
     "type": "bucket",
