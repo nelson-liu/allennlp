@@ -13,6 +13,7 @@
     "train_data_path": "/data/wsj.train.notrace.trees",
     "validation_data_path": "/data/wsj.dev.notrace.trees",
     "test_data_path": "/data/wsj.test.notrace.trees",
+    "evaluate_on_test": true,
     "model": {
       "type": "constituency_parser",
       "text_field_embedder": {
