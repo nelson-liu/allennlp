@@ -18,6 +18,7 @@
   "train_data_path": "/data/train.english.v4_gold_conll",
   "validation_data_path": "/data/dev.english.v4_gold_conll",
   "test_data_path": "/data/test.english.v4_gold_conll",
+  "evaluate_on_test": true,
   "model": {
     "type": "coref",
     "text_field_embedder": {
