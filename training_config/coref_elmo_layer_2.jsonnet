@@ -72,7 +72,7 @@
         "dropout": 0.2
     },
     "antecedent_feedforward": {
-        "input_dim": 3680,
+        "input_dim": 6752,
         "num_layers": 2,
         "hidden_dims": 150,
         "activations": "relu",
