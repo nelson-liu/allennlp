@@ -5,6 +5,7 @@
   "train_data_path": "/data/train/",
   "validation_data_path": "/data/development/",
   "test_data_path": "/data/conll-2012-test/",
+  "evaluate_on_test": true,
   "model": {
     "type": "srl",
     "text_field_embedder": {
