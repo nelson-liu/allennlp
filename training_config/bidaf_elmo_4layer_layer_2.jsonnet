@@ -41,7 +41,7 @@
                 "weight_file": "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/4x4096_512_2048cnn_2xhighway/options.json",
                 "do_layer_norm": false,
                 "dropout": 0.0,
-                "scalar_mix_parameters": [0.0, 0.0, 5.0, 0.0, 0.0]
+                "scalar_mix_parameters": [0.0, 0.0, 50.0, 0.0, 0.0]
             },
             "token_characters": {
                 "type": "character_encoding",
