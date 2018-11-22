@@ -21,8 +21,8 @@
             "elmo": {
                 "type": "elmo_token_embedder",
                 "dropout": 0.2,
-                "options_file": "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/4x4096_512_2048cnn_2xhighway/elmo_4x4096_512_2048cnn_2xhighway_weights.hdf5",
-                "weight_file": "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/4x4096_512_2048cnn_2xhighway/options.json",
+                "options_file": "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/4x4096_512_2048cnn_2xhighway/options.json",
+                "weight_file": "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/4x4096_512_2048cnn_2xhighway/elmo_4x4096_512_2048cnn_2xhighway_weights.hdf5",
                 "do_layer_norm": false,
                 "scalar_mix_parameters": [0.0, 0.0, 50.0, 0.0, 0.0]
             }
