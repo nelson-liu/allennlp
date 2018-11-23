@@ -61,7 +61,11 @@ def main(param_file: str, args: argparse.Namespace):
             "/output",
             "--file-friendly-logging",
             "--include-package",
-            "calypso"
+            "calypso.token_embedders",
+            "--include-package",
+            "calypso.allennlp_bridge",
+            "--include-package",
+            "calypso.bidirectional_lm"
         ]
 
     dataset_mounts = []
