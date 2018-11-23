@@ -1,3 +1,6 @@
+# Ignore dependencies (with calypso)
+dependencies/
+
 # build artifacts
 
 .eggs/
