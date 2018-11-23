@@ -63,6 +63,9 @@ RUN cd allennlp/tools/EVALB && make &> /dev/null && cd ../../../
 ARG CACHE_MODELS=false
 RUN ./scripts/cache_models.py
 
+# Install dependencies
+COPY dependencies/ dependencies
+RUN cd dependencies/calypso && make install
 
 # Optional argument to set an environment variable with the Git SHA
 ARG SOURCE_COMMIT

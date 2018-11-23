@@ -3,6 +3,9 @@
 # NOTE: all essential packages must be placed under a section named 'ESSENTIAL ...'
 # so that the script `./scripts/check_requirements_and_setup.py` can find them.
 
+# Cython for calypso
+cython
+
 #### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY ####
 
 # This installs Pytorch for CUDA 8 only. If you are using a newer version,
