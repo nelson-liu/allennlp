@@ -28,7 +28,7 @@ class StreusleTagger(Model):
         A Vocabulary, required in order to compute sizes for input/output projections.
     text_field_embedder : ``TextFieldEmbedder``, required
         Used to embed the tokens ``TextField`` we get as input to the model.
-    encoder : ``Seq2SeqEncoder``
+    encoder : ``Seq2SeqEncoder``, optional (default=``None``)
         The encoder that we will use in between embedding tokens and predicting output tags.
     label_namespace : ``str``, optional (default=``labels``)
         This is needed to constrain the CRF decoding.
@@ -47,7 +47,7 @@ class StreusleTagger(Model):
 
     def __init__(self, vocab: Vocabulary,
                  text_field_embedder: TextFieldEmbedder,
-                 encoder: Seq2SeqEncoder,
+                 encoder: Seq2SeqEncoder = None,
                  label_namespace: str = "labels",
                  feedforward: Optional[FeedForward] = None,
                  include_start_end_transitions: bool = True,
@@ -60,16 +60,20 @@ class StreusleTagger(Model):
         self.text_field_embedder = text_field_embedder
         self.num_tags = self.vocab.get_vocab_size(label_namespace)
         self.encoder = encoder
+        if self.encoder is not None:
+            encoder_output_dim = self.encoder.get_output_dim()
+        else:
+            encoder_output_dim = self.text_field_embedder.get_output_dim()
         if dropout:
             self.dropout = torch.nn.Dropout(dropout)
         else:
             self.dropout = None
-        self._feedforward = feedforward
+        self.feedforward = feedforward
 
         if feedforward is not None:
             output_dim = feedforward.get_output_dim()
         else:
-            output_dim = self.encoder.get_output_dim()
+            output_dim = encoder_output_dim
         self.tag_projection_layer = TimeDistributed(Linear(output_dim,
                                                            self.num_tags))
         # TODO (nfliu): Constrain CRF decoding
@@ -84,8 +88,9 @@ class StreusleTagger(Model):
                 "accuracy": CategoricalAccuracy(),
                 "accuracy3": CategoricalAccuracy(top_k=3)
         }
-        check_dimensions_match(text_field_embedder.get_output_dim(), encoder.get_input_dim(),
-                               "text field embedding dim", "encoder input dim")
+        if encoder is not None:
+            check_dimensions_match(text_field_embedder.get_output_dim(), encoder.get_input_dim(),
+                                   "text field embedding dim", "encoder input dim")
         if feedforward is not None:
             check_dimensions_match(encoder.get_output_dim(), feedforward.get_input_dim(),
                                    "encoder output dim", "feedforward input dim")
@@ -133,13 +138,16 @@ class StreusleTagger(Model):
         if self.dropout:
             embedded_text_input = self.dropout(embedded_text_input)
 
-        encoded_text = self.encoder(embedded_text_input, mask)
+        if self.encoder:
+            encoded_text = self.encoder(embedded_text_input, mask)
+        else:
+            encoded_text = embedded_text_input
 
         if self.dropout:
             encoded_text = self.dropout(encoded_text)
 
-        if self._feedforward is not None:
-            encoded_text = self._feedforward(encoded_text)
+        if self.feedforward is not None:
+            encoded_text = self.feedforward(encoded_text)
 
         logits = self.tag_projection_layer(encoded_text)
         best_paths = self.crf.viterbi_tags(logits, mask)
