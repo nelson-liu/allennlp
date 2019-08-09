@@ -213,15 +213,15 @@ def streusle_allowed_transitions(labels: Dict[int, str]) -> List[Tuple[int, int]
             from_tag = from_label
             from_entity = ""
         else:
-            from_tag = from_label[0]
-            from_entity = from_label[1:]
+            from_tag = from_label.split("-")[0]
+            from_entity = from_label.split("-")[1:]
         for to_label_index, to_label in labels_with_boundaries:
             if to_label in ("START", "END"):
                 to_tag = to_label
                 to_entity = ""
             else:
-                to_tag = to_label[0]
-                to_entity = to_label[1:]
+                to_tag = to_label.split("-")[0]
+                to_entity = to_label.split("-")[1:]
             if is_streusle_transition_allowed(from_tag, from_entity,
                                               to_tag, to_entity):
                 allowed.append((from_label_index, to_label_index))
