@@ -27,16 +27,7 @@
                 "requires_grad": false
             }
         }
-    },
-    "regularizer": [
-      [
-        "scalar_parameters",
-        {
-          "type": "l2",
-          "alpha": 0.1
-        }
-      ]
-    ]
+    }
   },
   "iterator": {
     "type": "basic",
