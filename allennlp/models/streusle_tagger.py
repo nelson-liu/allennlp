@@ -219,26 +219,19 @@ def streusle_allowed_transitions(labels: Dict[int, str]) -> List[Tuple[int, int]
     for from_label_index, from_label in labels_with_boundaries:
         if from_label in ("START", "END"):
             from_tag = from_label
-            from_entity = ""
         else:
             from_tag = from_label.split("-")[0]
-            from_entity = from_label.split("-")[1:]
         for to_label_index, to_label in labels_with_boundaries:
             if to_label in ("START", "END"):
                 to_tag = to_label
-                to_entity = ""
             else:
                 to_tag = to_label.split("-")[0]
-                to_entity = to_label.split("-")[1:]
-            if is_streusle_transition_allowed(from_tag, from_entity,
-                                              to_tag, to_entity):
+            if is_streusle_transition_allowed(from_tag, to_tag):
                 allowed.append((from_label_index, to_label_index))
     return allowed
 
 def is_streusle_transition_allowed(from_tag: str,
-                                   from_entity: str,
-                                   to_tag: str,
-                                   to_entity: str):
+                                   to_tag: str):
     """
     Given a constraint type and strings ``from_tag`` and ``to_tag`` that
     represent the origin and destination of the transition, return whether
@@ -248,16 +241,10 @@ def is_streusle_transition_allowed(from_tag: str,
     ----------
     from_tag : ``str``, required
         The tag that the transition originates from. For example, if the
-        label is ``I-PER``, the ``from_tag`` is ``I``.
-    from_entity: ``str``, required
-        The entity corresponding to the ``from_tag``. For example, if the
-        label is ``I-PER``, the ``from_entity`` is ``PER``.
+        label is ``I~-V-v.cognition``, the ``from_tag`` is ``I~``.
     to_tag : ``str``, required
         The tag that the transition leads to. For example, if the
-        label is ``I-PER``, the ``to_tag`` is ``I``.
-    to_entity: ``str``, required
-        The entity corresponding to the ``to_tag``. For example, if the
-        label is ``I-PER``, the ``to_entity`` is ``PER``.
+        label is ``I~-V-v.cognition``, the ``to_tag`` is ``I~``.
 
     Returns
     -------
@@ -265,6 +252,11 @@ def is_streusle_transition_allowed(from_tag: str,
         Whether the transition is allowed under the given ``constraint_type``.
     """
     # pylint: disable=too-many-return-statements
+    if from_tag not in ('O', 'B', 'I_', 'I~', 'o', 'b', 'i_', 'i~', 'START', 'END'):
+        raise ValueError("Got invalid from_tag {}".format(from_tag))
+    if to_tag not in ('O', 'B', 'I_', 'I~', 'o', 'b', 'i_', 'i~', 'START', 'END'):
+        raise ValueError("Got invalid to_tag {}".format(to_tag))
+
     if to_tag == "START" or from_tag == "END":
         # Cannot transition into START or from END
         return False
@@ -278,11 +270,11 @@ def is_streusle_transition_allowed(from_tag: str,
             # o can transition to o-*, b-*, I_-*, or I~-*
             from_tag in ('B', 'o') and to_tag in ('o', 'b', 'I_', 'I~'),
             # b can transition to i_ or i~, but only if the entity tags match
-            from_tag in ('b',) and to_tag in ('i_', 'i~') and from_entity == to_entity,
+            from_tag in ('b',) and to_tag in ('i_', 'i~'),
             # O can transition to O-*, B-*, or END
             from_tag in ('O',) and to_tag in ('O', 'B'),
             # I_, I~ can transition to all tags except i_-* or i~-*
             from_tag in ('I_', 'I~') and to_tag not in ('i_', 'i~'),
-            # i_, i~ can transition to all tags except O, B, or END
-            from_tag in ('i_', 'i') and to_tag not in ('O', 'B', 'END'),
+            # i_, i~ can transition to all tags except O, B
+            from_tag in ('i_', 'i~') and to_tag not in ('O', 'B'),
     ])
