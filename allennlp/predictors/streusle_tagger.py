@@ -2,10 +2,10 @@ from allennlp.common.util import JsonDict
 from allennlp.service.predictors.predictor import Predictor
 
 
-@Predictor.register('tagger')
-class TaggerPredictor(Predictor):
+@Predictor.register('streusle-tagger')
+class StreusleTaggerPredictor(Predictor):
     """"
-    Predictor wrapper for the Tagger.
+    Predictor wrapper for the StreusleTagger.
     """
     def dump_line(self, outputs: JsonDict) -> str:
         if "mask" in outputs:
