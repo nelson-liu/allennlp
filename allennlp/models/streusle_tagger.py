@@ -17,8 +17,9 @@ from allennlp.training.metrics import CategoricalAccuracy
 @Model.register("streusle_tagger")
 class StreusleTagger(Model):
     """
-    The ``StreusleTagger`` encodes a sequence of text with a ``Seq2SeqEncoder``,
-    then uses a Conditional Random Field model to predict a STREUSLE lextag for
+    The ``StreusleTagger`` embeds a sequence of text before (optionally)
+    encoding it with a ``Seq2SeqEncoder`` and passing it through a ``FeedForward``
+    before using a Conditional Random Field model to predict a STREUSLE lextag for
     each token in the sequence. Decoding is constrained with the "BbIiOo_~"
     tagging scheme.
 
@@ -76,7 +77,6 @@ class StreusleTagger(Model):
             output_dim = encoder_output_dim
         self.tag_projection_layer = TimeDistributed(Linear(output_dim,
                                                            self.num_tags))
-        # TODO (nfliu): Constrain CRF decoding
         labels = self.vocab.get_index_to_token_vocabulary(label_namespace)
         constraints = streusle_allowed_transitions(labels)
         self.include_start_end_transitions = include_start_end_transitions
