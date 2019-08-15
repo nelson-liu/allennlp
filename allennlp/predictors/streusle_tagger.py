@@ -5,7 +5,7 @@ from allennlp.service.predictors.predictor import Predictor
 @Predictor.register('streusle-tagger')
 class StreusleTaggerPredictor(Predictor):
     """"
-    Predictor wrapper for the StreusleTagger.
+    Predictor for the :class:`~allennlp.models.streusle_tagger.StreusleTagger` model.
     """
     def dump_line(self, outputs: JsonDict) -> str:
         if "mask" in outputs:
